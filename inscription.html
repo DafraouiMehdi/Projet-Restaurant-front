@@ -1,0 +1,410 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Inscription</title>
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+            overflow: hidden;
+            position: relative;
+            background-image: url('bodyy.jpg'); /* Replace with your image URL */
+            background-size: cover;
+            background-position: center center;
+            background-attachment: fixed;
+            background-repeat: no-repeat;
+        }
+
+        .background-blur {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-image: inherit;
+            background-size: inherit;
+            background-position: inherit;
+            background-attachment: inherit;
+            background-repeat: inherit;
+            filter: blur(10px);
+            z-index: -1;
+        }
+
+        .login-container {
+            background-color: rgba(0, 0, 0, 0.8); /* Darker for more contrast */
+            padding: 30px 50px; /* Extra padding for breathing room */
+            border-radius: 20px; /* Rounded corners for a modern feel */
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.4); /* Soft shadow for depth */
+            width: 700px;
+            color: white;
+            animation: fadeIn 1s ease-out;
+            text-align: center;
+        }
+
+        h2 {
+            font-size: 30px;
+            font-weight: bold;
+            margin-bottom: 30px;
+            color: #fff;
+            text-transform: uppercase;
+        }
+
+        .role-buttons {
+            display: flex;
+            justify-content: center;
+            gap: 25px;
+            margin-bottom: 30px;
+        }
+
+        .role-buttons button {
+            background-color: #4CAF50; /* Fresh, modern green */
+            color: white;
+            padding: 14px 22px;
+            border: none;
+            border-radius: 10px;
+            font-size: 18px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background-color 0.3s ease, transform 0.3s ease, box-shadow 0.3s ease;
+            width: 180px;
+        }
+
+        .role-buttons button:hover {
+            background-color: #388E3C; /* Darker shade of green */
+            transform: translateY(-5px); /* Subtle hover effect */
+            box-shadow: 0 8px 15px rgba(0, 0, 0, 0.2); /* Shadow effect on hover */
+        }
+
+        form {
+            display: flex;
+            justify-content: center; /* Center the columns */
+            gap: 40px; /* Space between columns */
+            align-items: center; /* Vertically align items */
+            width: 100%;
+        }
+
+        .form-column {
+            width: 48%; /* Ensures columns are evenly spaced */
+            display: flex;
+            flex-direction: column;
+            gap: 20px; /* Adds space between inputs within each column */
+        }
+
+        .form-column:first-child {
+            margin-right: 20px; /* Creates space between the left and right input columns */
+        }
+
+        input[type="text"], input[type="email"], input[type="password"], input[type="tel"] {
+            width: 100%; /* Keeps input elements full-width within their column */
+            padding: 15px 20px; /* Increased padding for better usability */
+            border: none;
+            border-radius: 10px; /* Rounded input fields */
+            background-color: #333;
+            color: white;
+            font-size: 16px;
+            font-weight: 500;
+            transition: background-color 0.3s ease, transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        label {
+            font-size: 14px;
+            color: #ccc;
+            margin-bottom: 5px;
+        }
+
+        input[type="text"]:focus, input[type="email"]:focus, input[type="password"]:focus, input[type="tel"]:focus {
+            background-color: #7986CB; /* Lighter blue for focus */
+            outline: none;
+            transform: scale(1.02);
+            color: #000;
+            box-shadow: 0 0 10px rgba(120, 144, 156, 0.5); /* Soft shadow on focus */
+        }
+
+        .btn {
+            background-color: #5C6BC0;
+            color: white;
+            padding: 16px;
+            width: 100%;
+            border: none;
+            border-radius: 10px;
+            font-size: 18px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: background-color 0.3s ease, transform 0.3s ease;
+            margin-top: 20px;
+        }
+
+        .btn:hover {
+            background-color: #3F51B5;
+            transform: scale(1.05);
+        }
+
+        /* .inscription-form{
+            margin-left: -50%;
+        } */
+
+        /* Success Popup */
+        .success-popup {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background-color: #28a745;
+            color: white;
+            padding: 20px;
+            border-radius: 5px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+            display: none;
+            align-items: center;
+            font-size: 1.2rem;
+            text-align: center;
+            opacity: 0;
+            transition: opacity 0.5s ease, transform 0.5s ease;
+        }
+
+        .success-popup.show {
+            display: flex;
+            opacity: 1;
+            transform: translate(-50%, -50%) scale(1);
+        }
+
+        .success-popup i {
+            margin-right: 10px;
+        }
+
+        #btn {
+    background-color: #5C6BC0; /* Modern blue color */
+    color: white;
+    padding: 16px;
+    width: 100%;
+    border: none;
+    border-radius: 10px;
+    font-size: 18px;
+    font-weight: bold;
+    cursor: pointer;
+    transition: background-color 0.3s ease, transform 0.3s ease, box-shadow 0.3s ease;
+    margin-top: 20px;
+}
+
+#btn:hover {
+    background-color: #3F51B5; /* Darker blue shade */
+    transform: scale(1.05); /* Slightly enlarge the button */
+    box-shadow: 0 8px 15px rgba(0, 0, 0, 0.2); /* Add shadow for a floating effect */
+}
+
+#btn:focus {
+    outline: none; /* Remove default focus outline */
+    box-shadow: 0 0 10px rgba(120, 144, 156, 0.5); /* Add subtle focus shadow */
+}
+
+
+        @keyframes fadeIn {
+            0% {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            100% {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* Responsive Design */
+        @media screen and (max-width: 768px) {
+            .login-container {
+                width: 90%;
+                padding: 20px;
+            }
+
+            .form-column {
+                width: 100%;
+            }
+
+            .role-buttons {
+                flex-direction: column;
+                gap: 10px;
+            }
+
+            .role-buttons button {
+                width: 100%;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="background-blur"></div>
+
+    <div class="login-container">
+        <h2>Inscription</h2>
+        
+        <!-- Buttons below the title -->
+        <div class="role-buttons">
+            <button type="button" id="clientBtn">Client</button>
+            <button type="button" id="livreurBtn">Livreur</button>
+        </div>
+
+        <form id="inscription-form">
+            <!-- Left Column -->
+            <div class="form-column">
+                <label for="firstname">First-Name</label>
+                <input type="text" id="firstname" name="firstname" placeholder="Enter your first name" required>
+
+                <label for="lastname">Last-Name</label>
+                <input type="text" id="lastname" name="lastname" placeholder="Enter your last name" required>
+
+                <label for="password">Password</label>
+                <input type="password" id="password" name="password" placeholder="Enter your password" required>
+            </div>
+
+            <!-- Right Column -->
+            <div class="form-column">
+                <label for="email">E-mail</label>
+                <input type="email" id="email" name="email" placeholder="Enter your email" required>
+
+                <label for="phone">Phone Number</label>
+                <input type="tel" id="phone" name="phone" placeholder="Enter your phone number" required>
+
+                <label for="address">Address</label>
+                <input type="text" id="address" name="address" placeholder="Enter your address" required>
+            </div>
+        </form>
+        <button type="submit" id="btn">S'inscrire</button>
+    </div>
+
+    <div class="success-popup" id="successPopup">
+        <i class="fas fa-check-circle"></i>
+        Dish added successfully!
+    </div>
+
+
+    
+    
+
+    <script>
+        const clientBtn = document.getElementById('clientBtn');
+        const livreurBtn = document.getElementById('livreurBtn');
+        const inscriptionForm = document.getElementById('inscription-form');
+        const successPopup = document.getElementById('successPopup');
+        
+        let role = null;
+    
+        clientBtn.addEventListener('click', () => {
+            role = "client";
+            clientBtn.style.transform = "scale(1.1)";
+            clientBtn.style.backgroundColor = "#E2A63E";
+            livreurBtn.style.transform = "scale(1)";
+            livreurBtn.style.backgroundColor = "";
+        });
+    
+        livreurBtn.addEventListener('click', () => {
+            role = "livreur";
+            livreurBtn.style.transform = "scale(1.1)";
+            livreurBtn.style.backgroundColor = "#E2A63E";
+            clientBtn.style.transform = "scale(1)";
+            clientBtn.style.backgroundColor = "";
+        });
+
+    
+        let btn = document.getElementById("btn");
+    
+        btn.addEventListener('click', (event) => {
+            event.preventDefault(); 
+            let fname = document.getElementById("firstname").value;
+            let lname = document.getElementById("lastname").value;
+            let email = document.getElementById("email").value;
+            let password = document.getElementById("password").value;
+            let adresse = document.getElementById("address").value;
+            let phone = document.getElementById("phone").value;
+    
+            if (!fname || !lname || !email || !password || !adresse || !phone) {
+                alert("Tous les champs doivent être remplis.");
+                return; 
+            }
+
+            if (!role) { 
+                alert("Veuillez spécifier le rôle !");
+                return;
+            }
+    
+            if (role === "client") {  
+                let dataClient = {
+                    firstname: fname,
+                    lastname: lname,
+                    email: email,
+                    password: password,
+                    adresse: adresse,
+                    phone: phone
+                };
+    
+                fetch("http://localhost:4433/PHP/PJResBack/clients/insert.php", {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json"
+                    },
+                    body: JSON.stringify(dataClient)
+                })
+                .then(response => response.json()) 
+                .then(data => {
+                    console.log("Success:", data);
+                    if (data.status === 'success') {
+                        successPopup.classList.add('show');
+                        setTimeout(() => successPopup.classList.remove('show'), 3000);
+                        inscriptionForm.reset(); 
+                        setTimeout(()=> window.location.href = data.url , 1000);
+                    } else {
+                        alert(data.message || "An error occurred");
+                    }
+                })
+                .catch((error) => {
+                    console.error("Error:", error);
+                });
+            }
+            if (role === "livreur") {  
+                let datalivreur = {
+                    firstname: fname,
+                    lastname: lname,
+                    email: email,
+                    password: password,
+                    adresse: adresse,
+                    phone: phone
+                };
+
+                fetch("http://localhost:4433/PHP/PJResBack/livreurs/accepte.php", {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json"
+                    },
+                    body: JSON.stringify(datalivreur)
+                })
+                .then(response => {
+                    console.log("Response:", response);
+                    return response.json();
+                })
+                .then(data => {
+                    console.log("Success:", data);
+                    if (data.status === 'success') {
+                        successPopup.classList.add('show');
+                        setTimeout(() => successPopup.classList.remove('show'), 3000);
+                        inscriptionForm.reset();
+                        setTimeout(()=> window.location.href = data.url , 1000);
+                    } else {
+                        alert(data.message || "An error occurred");
+                    }
+                })
+                .catch((error) => {
+                    console.error("Error:", error);
+                });
+
+            }
+        });
+    </script>
+    
+    
+</body>
+</html>

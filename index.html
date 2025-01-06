@@ -1,0 +1,264 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login</title>
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+            overflow: hidden;
+            position: relative;
+            background-image: url('bodyy.jpg'); /* Replace with your image URL */
+            background-size: cover;
+            background-position: center center;
+            background-attachment: fixed;
+            background-repeat: no-repeat;
+        }
+
+        /* Background Blur */
+        .background-blur {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-image: inherit;
+            background-size: inherit;
+            background-position: inherit;
+            background-attachment: inherit;
+            background-repeat: inherit;
+            filter: blur(8px);
+            z-index: -1;
+        }
+
+        /* Login Form Container */
+        .login-container {
+            background-color: rgba(0, 0, 0, 0.7); /* Semi-transparent background */
+            padding: 40px;
+            border-radius: 15px;
+            box-shadow: 0 15px 30px rgba(0, 0, 0, 0.3);
+            width: 350px;
+            color: white;
+            animation: fadeIn 1s ease-out;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .login-container h2 {
+            text-align: center;
+            margin-bottom: 20px;
+            font-size: 28px;
+            font-weight: 600;
+            color: #fff;
+            animation: slideIn 1s ease-out;
+        }
+
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateX(-50px);
+            }
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+
+        label {
+            font-size: 14px;
+            color: #ccc;
+            margin-bottom: 5px;
+            display: block;
+            animation: fadeInLabel 0.8s ease-out;
+        }
+
+        @keyframes fadeInLabel {
+            from {
+                opacity: 0;
+                transform: translateY(-10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        input[type="email"], input[type="password"] {
+            width: 100%;
+            padding: 14px;
+            margin: 10px 0 20px;
+            border: none;
+            border-radius: 8px;
+            background-color: #444;
+            color: white;
+            font-size: 16px;
+            box-sizing: border-box;
+            transition: all 0.3s ease;
+        }
+
+        input[type="email"]:focus, input[type="password"]:focus {
+            background-color: #c2cbff;
+            outline: none;
+            transform: scale(1.02);
+            color: #000000;
+        }
+
+        .btn {
+            background-color: #5C6BC0;
+            color: white;
+            padding: 14px 0;
+            width: 100%;
+            border: none;
+            border-radius: 8px;
+            font-size: 18px;
+            cursor: pointer;
+            transition: background-color 0.3s ease, transform 0.3s ease;
+        }
+
+        .btn:hover {
+            background-color: #3F51B5;
+            transform: scale(1.05);
+        }
+
+        /* Flexbox for links */
+        .links-container {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 25px;
+        }
+
+        /* Forgot Password Link */
+        .forgot-password {
+            color: #ccc;
+            font-size: 14px;
+            font-weight: 500;
+            text-decoration: none;
+            transition: color 0.3s ease, transform 0.3s ease;
+        }
+
+        .forgot-password:hover {
+            color: #ff4081; /* Vibrant pink color on hover */
+            transform: scale(1.05); /* Slight zoom-in effect */
+        }
+
+        /* Register Link */
+        .register-link {
+            color: #ccc;
+            font-size: 14px;
+            font-weight: 500;
+            text-decoration: none;
+            transition: color 0.3s ease, transform 0.3s ease;
+        }
+
+        .register-link:hover {
+            color: #4CAF50; /* Green color on hover */
+            transform: scale(1.05); /* Slight zoom-in effect */
+        }
+    </style>
+</head>
+<body>
+    <!-- Background blur effect -->
+    <div class="background-blur"></div>
+
+    <div class="login-container">
+        <h2>Login</h2>
+        <form id="login-form">
+            <label for="email">E-mail</label>
+            <input type="email" id="email" name="email" placeholder="Enter your email" required>
+            
+            <label for="password">Password</label>
+            <input type="password" id="password" name="password" placeholder="Enter your password" required>
+            
+            <button type="submit" class="btn">Login</button>
+            
+            <div class="links-container">
+                <a href="" class="forgot-password">Forgot Password?</a>
+                <a href="inscription.html" class="register-link">Register</a>
+            </div>
+        </form>
+    </div>
+
+    <script>
+        const loginForm = document.getElementById('login-form');
+    
+        loginForm.addEventListener('submit', async (event) => {
+            event.preventDefault(); 
+    
+            const email = document.getElementById('email').value.trim();
+            const password = document.getElementById('password').value.trim();
+    
+            if (!email || !password) {
+                alert('Please fill in all fields.');
+                return;
+            }
+    
+            const requestData = { email, password };
+    
+            try {
+                const response = await fetch('http://localhost:4433/PHP/PJResBack/checkconn/check.php', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(requestData)
+                });
+    
+                if (!response.ok) {
+                    throw new Error(`HTTP error! Status: ${response.status}`);
+                }
+    
+                const responseData = await response.json();
+    
+                if (responseData.status === 'success') {
+                    alert('Login successful! Redirecting...');
+                    if (responseData.user) {
+                        localStorage.setItem('userData', JSON.stringify(responseData.user));
+                    }
+                    window.location.href = responseData.url;
+                } else {
+                    alert(responseData.message);
+                }
+            } catch (error) {
+                console.error('Error during login attempt:', error);
+                alert('Connection error, please try again.');
+            }
+        });
+    </script>
+    
+    
+    
+</body>
+</html>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

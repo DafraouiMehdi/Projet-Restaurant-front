@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Orders List</title>
+    <style>
+        /* General Reset */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Poppins', sans-serif;
+        }
+
+        /* Icon Styling */
+        .icon {
+            background: rgb(228, 139, 61);
+            color: white;
+            font-size: 2rem;
+            font-weight: bold;
+            text-align: center;
+            line-height: 40px;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.2);
+            margin-bottom: 30px;
+            cursor: pointer;
+            transition: background 0.3s, transform 0.3s, box-shadow 0.3s;
+        }
+
+        /* Table Styling */
+        table {
+            width: 90%;
+            max-width: 1200px;
+            margin: 20px auto;
+            border-collapse: collapse;
+            background-color: white;
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
+        }
+
+        th, td {
+            padding: 18px;
+            text-align: center;
+            font-size: 1rem;
+            border-bottom: 1px solid #ddd;
+            transition: background 0.3s;
+        }
+
+        td img {
+            max-width: 80px;
+            height: auto;
+            border-radius: 5px;
+        }
+
+        /* Table Header */
+        th {
+            background-color: rgb(228, 139, 61);
+            color: white;
+            font-weight: 600;
+            letter-spacing: 1px;
+        }
+
+        /* Table Row Hover Effect */
+        tr:hover {
+            background-color: #f7f7f7;
+        }
+
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .icon {
+                width: 50px;
+                height: 50px;
+                font-size: 1.4rem;
+            }
+
+            table {
+                width: 100%;
+            }
+
+            th, td {
+                padding: 12px;
+                font-size: 0.9rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <table id="ordersTable">
+        <thead>
+            <tr>
+                <th>Plat_No</th>
+                <th>Plat_Name</th>
+                <th>Quantite</th>
+                <th>Prix</th>
+            </tr>
+        </thead>
+        <tbody>
+        </tbody>
+    </table>
+
+    <script>
+        fetch('http://localhost:4433/PHP/PJResBack/commandes/listHistcommande.php')
+            .then(response => response.json())
+            .then(data => {
+                console.log('Data fetched:', data);
+    
+                 
+                const groupedOrders = data.reduce((acc, order) => {
+                    if (!acc[order.client_no]) {
+                        acc[order.client_no] = [];
+                    }
+                    acc[order.client_no].push(order);
+                    return acc;
+                }, {});
+    
+                const tableBody = document.querySelector('#ordersTable tbody');
+    
+                tableBody.innerHTML = '';
+    
+                for (const clientNo in groupedOrders) {
+                    const clientOrders = groupedOrders[clientNo];
+    
+                    const headerRow = document.createElement('tr');
+                    const headerCell = document.createElement('td');
+                    headerCell.colSpan = 4;
+                    headerCell.style.backgroundColor = '#f4f4f4';
+                    headerCell.style.fontWeight = 'bold';
+                    headerCell.textContent = `Client No: ${clientNo}`;
+                    headerRow.appendChild(headerCell);
+                    tableBody.appendChild(headerRow);
+    
+                    clientOrders.forEach(order => {
+                        const row = document.createElement('tr');
+    
+                        const platNoCell = document.createElement('td');
+                        platNoCell.textContent = order.plat_no;
+    
+                        const platNameCell = document.createElement('td');
+                        platNameCell.textContent = order.name;
+    
+                        const quantiteCell = document.createElement('td');
+                        quantiteCell.textContent = order.quantite;
+    
+                        const prixCell = document.createElement('td');
+                        prixCell.textContent = order.price;
+    
+                        row.appendChild(platNoCell);
+                        row.appendChild(platNameCell);
+                        row.appendChild(quantiteCell);
+                        row.appendChild(prixCell);
+    
+                        tableBody.appendChild(row);
+                    });
+                }
+            })
+            .catch(error => {
+                console.error('Error fetching data:', error);
+            });
+    </script>
+    
+</body>
+</html>

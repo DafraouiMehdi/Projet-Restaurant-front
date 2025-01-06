@@ -1,0 +1,318 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Admin Dashboard</title>
+
+  <style>
+    /* General Reset */
+    body, html {
+      margin: 0;
+      padding: 0;
+      font-family: 'Montserrat', sans-serif;
+      background-color: #f4f7fc;
+    }
+
+    /* Dashboard Layout */
+    .dashboard {
+      display: flex;
+      height: 100vh;
+    }
+
+    .sidebar {
+      width: 250px;
+      background: linear-gradient(45deg, #d6694d, #feb47b);
+      color: #fff;
+      display: flex;
+      flex-direction: column;
+      transition: width 0.3s ease;
+      box-shadow: 2px 0 5px rgba(0, 0, 0, 0.1);
+    }
+
+    .sidebar .logo {
+      padding: 20px;
+      text-align: center;
+      font-size: 1.8rem;
+      font-weight: bold;
+      background: rgba(0, 0, 0, 0.1);
+      border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+    }
+
+    .sidebar nav {
+      flex: 1;
+      padding: 20px 10px;
+    }
+
+    .sidebar nav a {
+      display: block;
+      text-decoration: none;
+      color: #fff;
+      padding: 15px;
+      margin: 10px 0;
+      border-radius: 8px;
+      transition: background 0.3s, transform 0.2s;
+    }
+
+    .sidebar nav a.active, 
+    .sidebar nav a:hover {
+      background: rgba(255, 255, 255, 0.2);
+      transform: scale(1.05);
+    }
+
+    .main-content {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      background: #ffffff;
+      padding: 20px;
+      overflow-y: auto;
+    }
+
+    .main-content header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 20px;
+    }
+
+    .main-content header h1 {
+      font-size: 1.5rem;
+      color: #333;
+    }
+
+    .main-content header button {
+      background: #16a085;
+      color: white;
+      border: none;
+      padding: 10px 20px;
+      border-radius: 8px;
+      cursor: pointer;
+      font-size: 1rem;
+      transition: background 0.3s;
+    }
+
+    .main-content header button:hover {
+      background: #149174;
+    }
+
+    .content {
+      padding: 20px;
+      background: #f9fafc;
+      border-radius: 10px;
+      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+    }
+
+    .welcome-container {
+      text-align: center;
+    }
+
+    .welcome-container h2 {
+      color: #333;
+      margin-bottom: 10px;
+    }
+
+    .welcome-container p {
+      color: #777;
+      font-size: 1rem;
+    }
+
+    .details ul {
+      margin: 20px 0 0;
+      padding: 0;
+      list-style-type: none;
+    }
+
+    .details ul li {
+      margin: 10px 0;
+      padding: 10px;
+      background: #e3fcef;
+      border-left: 5px solid #16a085;
+      border-radius: 5px;
+      color: #333;
+    }
+
+    .spinner {
+      display: none;
+      margin: 20px auto;
+      width: 50px;
+      height: 50px;
+      border: 6px solid #f3f3f3;
+      border-top: 6px solid #16a085;
+      border-radius: 50%;
+      animation: spin 1s linear infinite;
+    }
+
+    .logo {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+      background: linear-gradient(45deg, #ff7e5f, #feb47b);
+      border-bottom: 2px solid rgba(255, 255, 255, 0.3);
+      transition: transform 0.3s ease, box-shadow 0.3s ease;
+    }
+
+    .logo img {
+      max-width: 100%;
+      max-height: 80px; /* Prevents the logo from being too large */
+      border-radius: 10%; /* Circular logo */
+      border: 4px solid white; /* Highlighted border */
+      box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.2);
+      transition: transform 0.3s ease, box-shadow 0.3s ease;
+    }
+
+    .logo:hover {
+      transform: scale(1); /* Subtle hover animation */
+      box-shadow: 0px 6px 12px rgba(0, 0, 0, 0.3);
+    }
+
+    @keyframes spin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+
+    @media (max-width: 768px) {
+      .sidebar {
+        width: 60px;
+      }
+
+      /* .sidebar .logo {
+        display: none;
+      } */
+
+      .logo {
+        display: none;
+        padding: 10px;
+      }
+
+      .logo img {
+        max-height: 60px; /* Slightly smaller on smaller screens */
+      }
+
+      .sidebar nav a {
+        text-align: center;
+        padding: 10px;
+      }
+
+      .main-content {
+        margin-left: 60px;
+      }
+    }
+
+    @media (max-width: 480px) {
+      .logo img {
+        max-height: 50px; /* Further reduce size for mobile */
+      }
+    }
+
+    /* Navbar Layout */
+    .navbar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      width: 100%;
+    }
+
+    .navbar__right {
+      display: flex;
+      align-items: center;
+    }
+
+    .navbar__right a {
+      margin-left: 15px;
+      text-decoration: none;
+      color: #333;
+    }
+    
+    .navbar button {
+      background: none;
+      border: none;
+      font-size: 1.5rem;
+      color: #333;
+      cursor: pointer;
+    }
+  </style>
+</head>
+<body>
+  <div class="dashboard">
+    <!-- Sidebar -->
+    <aside class="sidebar">
+      <div class="logo"><img src="logo.jpg" alt=""></div>
+      <nav id="navLinks">
+        <a onclick="loadContent('Actions/statistique.html')">Statistiques</a>
+        <a onclick="loadContent('Plats/listPlat.html')">Gestion des Plats</a>
+        <a onclick="loadContent('commandes/listcomm.html')">Gestion des Commandes</a>
+        <a onclick="loadContent('livreurs/accepts.html')">Gestion des Livreurs</a>
+        <a onclick="loadContent('actions/historique.html')">Historique des Commandes</a>
+        <a onclick="handleconnection()">Logout</a>
+      </nav>
+    </aside>
+
+    <!-- Main Content -->
+    <main class="main-content">
+      <header>
+        <div class="navbar">
+          <button id="toggleSidebar">☰</button>
+          <div class="navbar__right">
+            <a href="#"> 
+              <i class="fa fa-search" aria-hidden="true"></i>
+            </a>
+            <a href="#"> 
+              <i class="fa fa-clock-o" aria-hidden="true"></i>
+            </a>
+            <a href="#">
+              <img width="30" src="logo.jpg" alt="" />
+            </a>
+          </div>
+        </div>
+      </header>
+      <div class="spinner" id="spinner"></div>
+      <section class="content" id="mainContent">
+        
+      </section>
+    </main>
+  </div>
+
+  <script>
+    document.addEventListener("DOMContentLoaded", () => {
+      const sidebar = document.querySelector(".sidebar");
+      const toggleButton = document.getElementById("toggleSidebar");
+
+      toggleButton.addEventListener("click", () => {
+        sidebar.style.width = sidebar.style.width === "0px" ? "250px" : "0px";
+      });
+
+      loadContent('Actions/statistique.html');
+    });
+
+    function loadContent(url) {
+      const mainContent = document.getElementById("mainContent");
+      const timestamp = new Date().getTime();
+
+      fetch(`${url}?t=${timestamp}`)
+        .then(response => {
+          if (!response.ok) throw new Error(`Impossible de charger : ${url}`);
+          return response.text();
+        })
+        .then(html => {
+          mainContent.innerHTML = html;
+          const scripts = mainContent.querySelectorAll('script');
+          scripts.forEach(script => {
+            const newScript = document.createElement('script');
+            newScript.textContent = script.textContent;
+            document.body.appendChild(newScript);
+            script.remove();
+          });
+        })
+        .catch(error => {
+          mainContent.innerHTML = `<p style="color: red;">Erreur : ${error.message}</p>`;
+        });
+    }
+
+    function handleconnection() {
+      window.location.href = "connection.html";
+    }
+  </script>
+</body>
+</html>

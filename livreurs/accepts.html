@@ -1,0 +1,531 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Orders List</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <style>
+        /* General Reset */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Poppins', sans-serif;
+        }
+
+        /* Table Styling */
+        table {
+            width: 90%;
+            max-width: 1200px;
+            margin: 20px auto;
+            border-collapse: collapse;
+            background-color: white;
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
+        }
+
+        th, td {
+            padding: 18px;
+            text-align: center;
+            font-size: 1rem;
+            border-bottom: 1px solid #ddd;
+            transition: background 0.3s;
+        }
+
+        th {
+            background-color: rgb(228, 139, 61);
+            color: white;
+            font-weight: 600;
+            letter-spacing: 1px;
+        }
+
+        tr:hover {
+            background-color: #f7f7f7;
+        }
+
+        .actions-container {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 10px; /* Ajoutez un écart si nécessaire */
+}
+        /* Buttons Styling */
+        .action-btn {
+            border: none;
+            padding: 8px 12px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 1rem;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            transition: transform 0.3s, background-color 0.3s;
+        }
+
+        .action-btn.accept {
+            background-color: #4CAF50;
+            color: white;
+        }
+
+        .action-btn.reject {
+            background-color: #F44336;
+            color: white;
+        }
+
+        .action-btn:hover {
+            transform: scale(1.1);
+        }
+
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            table {
+                width: 100%;
+            }
+
+            th, td {
+                padding: 12px;
+                font-size: 0.9rem;
+            }
+        }
+    </style>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+</head>
+<body>
+    <table id="ordersTable">
+        <thead>
+            <tr>
+                <th>FirstName</th>
+                <th>LastName</th>
+                <th>E-mail</th>
+                <th>adresse</th>
+                <th>phone</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            <!-- Data will be inserted here -->
+        </tbody>
+    </table>
+
+
+
+    <script>
+        async function initializeApp() {
+            try {
+                const response = await fetch('http://localhost:4433/PHP/PJResBack/livreurs/list_livreur.php');
+                const text = await response.text();
+    
+                try {
+                    const data = JSON.parse(text);
+                    console.log('Data fetched:', data);
+    
+                    const tableBody = document.querySelector('#ordersTable tbody');
+                    tableBody.innerHTML = '';
+    
+                    data.forEach(liv => {
+                        const row = document.createElement('tr');
+    
+                        const clientNoCell = document.createElement('td');
+                        clientNoCell.textContent = liv.first_name;
+    
+                        const platNoCell = document.createElement('td');
+                        platNoCell.textContent = liv.last_name;
+    
+                        const platNameCell = document.createElement('td');
+                        platNameCell.textContent = liv.email;
+    
+                        const quantiteCell = document.createElement('td');
+                        quantiteCell.textContent = liv.adresse;
+    
+                        const prixCell = document.createElement('td');
+                        prixCell.textContent = liv.phone;
+    
+                        const actionsCell = document.createElement('td');
+    
+                        const actionsContainer = document.createElement('div');
+                        actionsContainer.className = 'actions-container';
+    
+                        const acceptButton = document.createElement('button');
+                        acceptButton.className = 'action-btn accept';
+                        acceptButton.innerHTML = '<i class="fas fa-check"></i>';
+                        acceptButton.addEventListener('click', () => handleAcceptOrder(liv));
+    
+                        const rejectButton = document.createElement('button');
+                        rejectButton.className = 'action-btn reject';
+                        rejectButton.innerHTML = '<i class="fas fa-times"></i>';
+                        rejectButton.addEventListener('click', () => handleRejectOrder(liv));
+    
+                        actionsContainer.appendChild(acceptButton);
+                        actionsContainer.appendChild(rejectButton);
+                        actionsCell.appendChild(actionsContainer);
+    
+                        row.appendChild(clientNoCell);
+                        row.appendChild(platNoCell);
+                        row.appendChild(platNameCell);
+                        row.appendChild(quantiteCell);
+                        row.appendChild(prixCell);
+                        row.appendChild(actionsCell);
+    
+                        tableBody.appendChild(row);
+                    });
+    
+                } catch (error) {
+                    console.error('Error parsing JSON:', error);
+                    console.log('Response text:', text);
+                }
+            } catch (error) {
+                console.error('Error fetching data:', error);
+            }
+        }
+    
+        function handleAcceptOrder(liv) {
+          
+            const payload = {
+                first_name: liv.first_name,
+                last_name: liv.last_name,
+                email: liv.email,
+                password: liv.password,
+                adresse: liv.adresse,
+                phone: liv.phone,
+            };
+    
+
+            fetch('http://localhost:4433/PHP/PJResBack/livreurs/insert.php', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(payload),
+            })
+            .then(response => response.json())
+            .then(result => {
+                if (result.success) {
+                    sendSmsToBackend(liv);
+                } else {
+                    alert(`Erreur: ${result.message}`);
+                }
+            })
+            .catch(error => {
+                console.error('Erreur lors de l\'envoi des données:', error);
+                alert('Erreur lors de l\'acceptation de la Demmande.');
+            });
+        }
+    
+        function sendSmsToBackend(liv) {
+            const smsData = {
+                to: liv.phone,
+                from: "Restaurant Zri9a Food",
+                text: `Votre commande a été acceptée, ${liv.first_name} ${liv.last_name}.`
+            };
+    
+            fetch('http://localhost:3000/send-sms', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(smsData)
+            })
+            .then(response => response.json())
+            .then(result => {
+                console.log('SMS envoyé avec succès:', result);
+            })
+            .catch(error => {
+                console.error('Erreur lors de l\'envoi du SMS:', error);
+            });
+        }
+    
+        function handleRejectOrder(liv) {
+            alert(`Commande rejetée pour ${liv.first_name} ${liv.last_name}`);
+        }
+    
+        initializeApp();
+    </script>
+    
+    
+    
+
+
+
+
+
+    <!-- <script>
+        async function initializeApp() {
+            try {
+                const response = await fetch('http://localhost:4433/PHP/PJResBack/livreurs/list_livreur.php');
+                const text = await response.text();
+        
+                try {
+                    const data = JSON.parse(text);
+                    console.log('Data fetched:', data);
+        
+                    const tableBody = document.querySelector('#ordersTable tbody');
+                    tableBody.innerHTML = '';
+        
+                    data.forEach(liv => {
+                        const row = document.createElement('tr');
+        
+                        const clientNoCell = document.createElement('td');
+                        clientNoCell.textContent = liv.first_name;
+        
+                        const platNoCell = document.createElement('td');
+                        platNoCell.textContent = liv.last_name;
+        
+                        const platNameCell = document.createElement('td');
+                        platNameCell.textContent = liv.email;
+        
+                        const quantiteCell = document.createElement('td');
+                        quantiteCell.textContent = liv.adresse;
+        
+                        const prixCell = document.createElement('td');
+                        prixCell.textContent = liv.phone;
+        
+                        const actionsCell = document.createElement('td');
+        
+                        const actionsContainer = document.createElement('div');
+                        actionsContainer.className = 'actions-container';
+        
+                        const acceptButton = document.createElement('button');
+                        acceptButton.className = 'action-btn accept';
+                        acceptButton.innerHTML = '<i class="fas fa-check"></i>';
+                        acceptButton.addEventListener('click', () => handleAcceptOrder(liv));
+        
+                        const rejectButton = document.createElement('button');
+                        rejectButton.className = 'action-btn reject';
+                        rejectButton.innerHTML = '<i class="fas fa-times"></i>';
+                        rejectButton.addEventListener('click', () => handleRejectOrder(liv));
+        
+                        actionsContainer.appendChild(acceptButton);
+                        actionsContainer.appendChild(rejectButton);
+                        actionsCell.appendChild(actionsContainer);
+        
+                        row.appendChild(clientNoCell);
+                        row.appendChild(platNoCell);
+                        row.appendChild(platNameCell);
+                        row.appendChild(quantiteCell);
+                        row.appendChild(prixCell);
+                        row.appendChild(actionsCell);
+        
+                        tableBody.appendChild(row);
+                    });
+        
+                } catch (error) {
+                    console.error('Error parsing JSON:', error);
+                    console.log('Response text:', text);
+                }
+            } catch (error) {
+                console.error('Error fetching data:', error);
+            }
+        }
+        
+        // Handle the order acceptance
+        function handleAcceptOrder(liv) {
+            // Create the payload for the POST request
+            const payload = {
+                first_name: liv.first_name,
+                last_name: liv.last_name,
+                email: liv.email,
+                password: liv.password,
+                adresse: liv.adresse,
+                phone: liv.phone,
+            };
+    
+            // Send POST request to the server
+            fetch('http://localhost:4433/PHP/PJResBack/livreurs/insert.php', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(payload),
+            })
+            .then(response => response.json())
+            .then(result => {
+                if (result.success) {
+                    const smsData = {
+                        to: liv.phone,  // The recipient's phone number
+                        from: "Restaurant Zri9a Food", // Sender's name or number
+                        text: `Bonjour ${liv.first_name},\n\nVotre Demmande a été acceptée.\n\nMerci,\nL'équipe de Livraison. \n Restaurant Zri9a Food.`
+                    };
+
+                    // Send the SMS using Infobip API
+                    fetch('https://e5x4m1.api.infobip.com/messages-api/1/messages', {
+                        method: 'POST',
+                        headers: {
+                            'Authorization': 'App dd2aff194c00a4ae62e538f1cba326b6-9213a231-9c6d-4e7f-9aab-34d76e9ae549', // Replace with your Infobip API key
+                            'Content-Type': 'application/json',
+                        },
+                        body: JSON.stringify({
+                            messages: [{
+                                to: smsData.to,
+                                from: smsData.from,
+                                text: smsData.text,
+                            }]
+                        }),
+                        mode: 'no-cors', // This will avoid the CORS issue, but you won’t have access to the response body
+                    })
+                    .then(response => {
+                        console.log('Request sent (no-cors mode)');
+                    })
+                    .catch(error => {
+                        console.error('Error sending SMS:', error);
+                    });
+
+                } else {
+                    alert(`Erreur: ${result.message}`);
+                }
+            })
+            .catch(error => {
+                console.error('Erreur lors de l\'envoi des données:', error);
+                alert('Erreur lors de l\'acceptation de la Demmande.');
+            });
+        }
+    
+        // Handle the order rejection
+        function handleRejectOrder(liv) {
+            // Here, you can handle the rejection logic. For now, we'll just alert the rejection.
+            alert(`Commande rejetée pour ${liv.first_name} ${liv.last_name}`);
+        }
+    
+        // Initialize the app
+        initializeApp();
+    </script> -->
+    
+    
+
+    <!-- <script>
+        // Fetch data from PHP
+        fetch('http://localhost:4433/PHP/PJResBack/livreurs/list_livreur.php')
+            .then(response => response.text())
+            .then(text => {
+                try {
+                    const data = JSON.parse(text);
+                    console.log('Data fetched:', data);
+
+                    const tableBody = document.querySelector('#ordersTable tbody');
+                    tableBody.innerHTML = '';
+
+                    data.forEach(liv => {
+                        const row = document.createElement('tr');
+
+                        const clientNoCell = document.createElement('td');
+                        clientNoCell.textContent = liv.first_name;
+
+                        const platNoCell = document.createElement('td');
+                        platNoCell.textContent = liv.last_name;
+
+                        const platNameCell = document.createElement('td');
+                        platNameCell.textContent = liv.email;
+
+                        const quantiteCell = document.createElement('td');
+                        quantiteCell.textContent = liv.adresse;
+
+                        const prixCell = document.createElement('td');
+                        prixCell.textContent = liv.phone;
+
+                        const actionsCell = document.createElement('td');
+
+                        const actionsContainer = document.createElement('div');
+                        actionsContainer.className = 'actions-container';
+
+                        const acceptButton = document.createElement('button');
+                        acceptButton.className = 'action-btn accept';
+                        acceptButton.innerHTML = '<i class="fas fa-check"></i>';
+                        acceptButton.addEventListener('click', () => {
+                            alert(`Commande accepted for Client No: ${liv.first_name}`);
+                        });
+
+                        const rejectButton = document.createElement('button');
+                        rejectButton.className = 'action-btn reject';
+                        rejectButton.innerHTML = '<i class="fas fa-times"></i>';
+                        rejectButton.addEventListener('click', () => {
+                            alert(`Commande rejected for Client No: ${liv.first_name}`);
+                        });
+
+                        actionsContainer.appendChild(acceptButton);
+                        actionsContainer.appendChild(rejectButton);
+                        actionsCell.appendChild(actionsContainer);
+
+                        row.appendChild(clientNoCell);
+                        row.appendChild(platNoCell);
+                        row.appendChild(platNameCell);
+                        row.appendChild(quantiteCell);
+                        row.appendChild(prixCell);
+                        row.appendChild(actionsCell);
+
+                        tableBody.appendChild(row);
+
+                        // Initialize EmailJS with your User ID
+                        emailjs.init("rwBGxAnTyfQ3fe1wT");
+
+                        // Add event listener for the "accept" button
+                        acceptButton.addEventListener('click', () => {
+                            // Create the payload for the POST request
+                            const payload = {
+                                first_name: liv.first_name,
+                                last_name: liv.last_name,
+                                email: liv.email,
+                                password: liv.password,
+                                adresse: liv.adresse,
+                                phone: liv.phone,
+                            };
+
+                            // Send POST request to the server
+                            fetch('http://localhost:4433/PHP/PJResBack/livreurs/insert.php', {
+                                method: 'POST',
+                                headers: {
+                                    'Content-Type': 'application/json',
+                                },
+                                body: JSON.stringify(payload),
+                            })
+                            .then(response => {
+                                // Check if the response is JSON before parsing
+                                if (!response.ok) {
+                                    throw new Error('Network response was not ok');
+                                }
+                                return response.json();
+                            })
+                            .then(result => {
+                                // Check if the response contains the expected data
+                                console.log("res".result);  // Log the result for debugging
+                                if (result.success) {
+                                    // Prepare the email data
+                                    const emailData = {
+                                        to_email: liv.email,
+                                        first_name: liv.first_name,
+                                        last_name: liv.last_name,
+                                        subject: "Commande acceptée!",
+                                        message: `Bonjour ${liv.first_name},\n\nVotre commande a été acceptée.\n\nMerci,\nL'équipe de Livraison.`
+                                    };
+
+                                    // Send email via EmailJS
+                                    emailjs.send("service_2m2tdkb", "template_71cc8np", emailData)
+                                        .then((response) => {
+                                            console.log('Email envoyé avec succès:', response);
+                                            alert(`Commande acceptée pour Client: ${liv.first_name}. Email envoyé.`);
+                                        }, (error) => {
+                                            console.error('Erreur lors de l\'envoi de l\'email:', error);
+                                            alert('Erreur lors de l\'envoi de l\'email.');
+                                        });
+                                } else {
+                                    alert(`Erreur: ${result.message}`);
+                                }
+                            })
+                            .catch(error => {
+                                console.error('Erreur lors de l\'envoi des données:', error);
+                                alert('Erreur lors de l\'acceptation de la commande.');
+                            });
+                        });
+                    });
+                } catch (error) {
+                    console.error('Error parsing JSON:', error);
+                    console.log('Response text:', text);
+                }
+            })
+            .catch(error => {
+                console.error('Error fetching data:', error);
+            });
+    </script> -->
+
+</body>
+</html>
